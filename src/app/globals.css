@@ -22,3 +22,12 @@ body {
 .btn {
   @apply bg-gray-900 hover:bg-gray-800 text-white py-2 px-4 rounded transition duration-200;
 }
+:root {
+  --primary: #000000;
+  --secondary: #f8f8f8;
+}
+
+body {
+  background-color: var(--secondary);
+  color: var(--primary);
+}
