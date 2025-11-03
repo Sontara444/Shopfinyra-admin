@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import AdminLayout from "../components/layout/AdminLayout";
+import { useRouter } from "next/navigation";
 
 interface Product {
   _id?: string;
@@ -12,6 +13,8 @@ interface Product {
 }
 
 export default function ProductsPage() {
+  const router = useRouter();
+
   const [products, setProducts] = useState<Product[]>([]);
 
   // Fetch products from backend API (placeholder)
@@ -19,20 +22,19 @@ export default function ProductsPage() {
     fetchProducts();
   }, []);
 
- const fetchProducts = async () => {
-  try {
-    const res = await fetch("http://localhost:5000/api/products");
-    if (!res.ok) throw new Error("Failed to fetch products");
-    const data = await res.json();
+  const fetchProducts = async () => {
+    try {
+      const res = await fetch("http://localhost:5000/api/products");
+      if (!res.ok) throw new Error("Failed to fetch products");
+      const data = await res.json();
 
-    // ✅ Fix here
-    setProducts(Array.isArray(data) ? data : data.products || []);
-  } catch (error) {
-    console.error("Error fetching products:", error);
-    setProducts([]); // fallback
-  }
-};
-
+      // ✅ Fix here
+      setProducts(Array.isArray(data) ? data : data.products || []);
+    } catch (error) {
+      console.error("Error fetching products:", error);
+      setProducts([]); // fallback
+    }
+  };
 
   const handleAddProduct = () => {
     alert("Add Product functionality coming soon!");
@@ -49,8 +51,8 @@ export default function ProductsPage() {
         </div>
 
         <button
-          onClick={handleAddProduct}
-          className="px-4 py-2 bg-black text-white rounded-lg hover:opacity-90 transition"
+          onClick={() => router.push("/products/addproduct")}
+          className="bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white px-4 py-2 rounded-lg font-medium shadow-sm transition"
         >
           + Add Product
         </button>

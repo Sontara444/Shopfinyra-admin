@@ -13,7 +13,6 @@ export default function Sidebar() {
         {[
           { href: "/dashboard", label: "Dashboard" },
           { href: "/products", label: "Products" },
-          { href: "/users", label: "Users" },
           { href: "/orders", label: "Orders" },
           { href: "/customers", label: "customers" },
           { href: "/analytics", label: "Analytics" },
