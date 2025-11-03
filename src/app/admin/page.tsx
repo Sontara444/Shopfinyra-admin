@@ -20,9 +20,7 @@ export default function AdminAuth() {
     e.preventDefault();
     setError(null);
 
-    const endpoint = isLogin
-      ? "/admin/login"
-      : "/admin/register";
+    const endpoint = isLogin ? "/admin/login" : "/admin/register";
 
     try {
       const res = await fetch(
@@ -39,6 +37,7 @@ export default function AdminAuth() {
 
       if (isLogin) {
         localStorage.setItem("adminToken", data.token);
+        if (data.admin?.name) localStorage.setItem("adminName", data.admin.name);
         router.push("/dashboard");
       } else {
         alert("Admin account created successfully! Please log in.");
