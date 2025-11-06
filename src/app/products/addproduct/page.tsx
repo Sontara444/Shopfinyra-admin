@@ -21,15 +21,46 @@ export default function AddProductPage() {
   });
 
   const [loading, setLoading] = useState(false);
+  const [uploading, setUploading] = useState(false); // 👈 NEW
 
   const handleChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>
+    e: React.ChangeEvent<
+      HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
+    >
   ) => {
     const { name, value, type, checked } = e.target;
     setForm({
       ...form,
       [name]: type === "checkbox" ? checked : value,
     });
+  };
+
+  // 👇 NEW: Handle Cloudinary Upload
+  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    setUploading(true);
+    const formData = new FormData();
+    formData.append("image", file);
+
+    try {
+      const res = await fetch("http://localhost:5000/api/upload", {
+        method: "POST",
+        body: formData,
+      });
+      const data = await res.json();
+      if (data.success) {
+        setForm({ ...form, image: data.url });
+      } else {
+        alert("❌ Failed to upload image");
+      }
+    } catch (err) {
+      console.error(err);
+      alert("❌ Upload error");
+    } finally {
+      setUploading(false);
+    }
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -68,12 +99,19 @@ export default function AddProductPage() {
     <AdminLayout>
       <div className="max-w-4xl mx-auto bg-white rounded-xl shadow-md p-8 mt-6">
         <h1 className="text-2xl font-semibold mb-2">Add Product</h1>
-        <p className="text-gray-500 mb-6">Add a new marble decor or murti product.</p>
+        <p className="text-gray-500 mb-6">
+          Add a new marble decor or murti product.
+        </p>
 
-        <form onSubmit={handleSubmit} className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <form
+          onSubmit={handleSubmit}
+          className="grid grid-cols-1 md:grid-cols-2 gap-6"
+        >
           {/* Name */}
           <div className="col-span-2">
-            <label className="block text-sm font-medium text-gray-700 mb-1">Product Name</label>
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              Product Name
+            </label>
             <input
               type="text"
               name="name"
@@ -87,7 +125,9 @@ export default function AddProductPage() {
 
           {/* Category */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Category</label>
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              Category
+            </label>
             <select
               name="category"
               value={form.category}
@@ -103,7 +143,9 @@ export default function AddProductPage() {
 
           {/* Price */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Price (₹)</label>
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              Price (₹)
+            </label>
             <input
               type="number"
               name="price"
@@ -117,7 +159,9 @@ export default function AddProductPage() {
 
           {/* Stock */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Stock Quantity</label>
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              Stock Quantity
+            </label>
             <input
               type="number"
               name="stock"
@@ -137,7 +181,9 @@ export default function AddProductPage() {
               onChange={handleChange}
               className="w-4 h-4 border-gray-300 rounded"
             />
-            <label className="text-sm font-medium text-gray-700">Mark as Featured</label>
+            <label className="text-sm font-medium text-gray-700">
+              Mark as Featured
+            </label>
           </div>
 
           {/* In Stock */}
@@ -149,12 +195,16 @@ export default function AddProductPage() {
               onChange={handleChange}
               className="w-4 h-4 border-gray-300 rounded"
             />
-            <label className="text-sm font-medium text-gray-700">In Stock</label>
+            <label className="text-sm font-medium text-gray-700">
+              In Stock
+            </label>
           </div>
 
           {/* Dimensions */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Dimensions</label>
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              Dimensions
+            </label>
             <input
               type="text"
               name="dimensions"
@@ -167,7 +217,9 @@ export default function AddProductPage() {
 
           {/* Material */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Material</label>
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              Material
+            </label>
             <input
               type="text"
               name="material"
@@ -180,7 +232,9 @@ export default function AddProductPage() {
 
           {/* Weight */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Weight</label>
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              Weight
+            </label>
             <input
               type="text"
               name="weight"
@@ -191,22 +245,36 @@ export default function AddProductPage() {
             />
           </div>
 
-          {/* Image */}
+          {/* Image Upload */}
           <div className="col-span-2">
-            <label className="block text-sm font-medium text-gray-700 mb-1">Image URL</label>
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              Upload Image
+            </label>
             <input
-              type="text"
-              name="image"
-              value={form.image}
-              onChange={handleChange}
-              className="w-full border border-gray-300 rounded-lg p-2 focus:ring-2 focus:ring-black"
-              placeholder="Paste Cloudinary or image URL"
+              type="file"
+              accept="image/*"
+              onChange={handleImageUpload}
+              className="w-full border border-gray-300 rounded-lg p-2"
             />
+
+            {uploading && (
+              <p className="text-sm text-gray-500 mt-1">Uploading image...</p>
+            )}
+
+            {form.image && (
+              <img
+                src={form.image}
+                alt="Preview"
+                className="mt-3 w-32 h-32 object-cover rounded-lg border"
+              />
+            )}
           </div>
 
           {/* Description */}
           <div className="col-span-2">
-            <label className="block text-sm font-medium text-gray-700 mb-1">Description</label>
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              Description
+            </label>
             <textarea
               name="description"
               value={form.description}
@@ -229,7 +297,7 @@ export default function AddProductPage() {
             </button>
             <button
               type="submit"
-              disabled={loading}
+              disabled={loading || uploading}
               className="px-5 py-2 bg-black text-white rounded-lg hover:bg-gray-800 disabled:opacity-50"
             >
               {loading ? "Adding..." : "Add Product"}
