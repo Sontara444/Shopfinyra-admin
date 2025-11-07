@@ -2,7 +2,7 @@
 import "./globals.css";
 
 export const metadata = {
-  title: "Lovable Admin Dashboard",
+  title: "ShopFinyra Admin Dashboard",
   description: "Admin panel for ShopFinyra E-Commerce",
 };
 
