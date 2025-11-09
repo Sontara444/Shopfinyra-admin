@@ -24,16 +24,22 @@ export default function AddProductPage() {
   const [uploading, setUploading] = useState(false); // 👈 NEW
 
   const handleChange = (
-    e: React.ChangeEvent<
-      HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
-    >
-  ) => {
-    const { name, value, type, checked } = e.target;
-    setForm({
-      ...form,
-      [name]: type === "checkbox" ? checked : value,
-    });
-  };
+  e: React.ChangeEvent<
+    HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
+  >
+) => {
+  const target = e.target as HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement;
+  const { name, value, type } = target;
+
+  setForm({
+    ...form,
+    [name]:
+      type === "checkbox"
+        ? (target as HTMLInputElement).checked
+        : value,
+  });
+};
+
 
   // 👇 NEW: Handle Cloudinary Upload
   const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
